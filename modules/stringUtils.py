@@ -88,7 +88,7 @@ def cleanLabels(text, formater=''):
                    (u"[I]", u''), (u"[/I]", u''),
                    (u'[D]', u''), (u'[F]', u''),
                    (u"[CR]", u''), (u"[HD]", u''),
-                   (u"()", u''), (u"[CC]", u''),
+                   (u"[CC]", u''), (u".", u''),
                    (u"[Cc]", u''), (u"[Favorite]", u""),
                    (u"[DRM]", u""), (u'(cc).', u''),
                    (u'(n)', u''), (u"(SUB)", u''),
@@ -98,6 +98,7 @@ def cleanLabels(text, formater=''):
                    (u"\t", u""), (u"\ ", u''),
                    (u"/ ", u''), (u"\\", u'/'),
                    (u"//", u'/'), (u'plugin.video.', u''),(u':', u''),
+                   (u"mkv Uptobox", u''),                  
                    (u'plugin.audio.', u''))
 
     text = utils.multiple_reSub(text, dictresub)
