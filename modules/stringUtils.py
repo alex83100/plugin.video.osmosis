@@ -86,24 +86,24 @@ def cleanLabels(text, formater=''):
                    (u"[/UPPERCASE]", u''), (u"[LOWERCASE]", u''),
                    (u"[/LOWERCASE]", u''), (u"[B]", u''), (u"[/B]", u''),
                    (u"[I]", u''), (u"[/I]", u''),
-                   (u'[D]', u''), (u'[F]', u''),
-                   (u"[CR]", u''), (u"[HD]", u''),
-                   (u"()", u''), (u"[CC]", u''),
-                   (u"[Cc]", u''), (u"[Favorite]", u""),
+                   (u'[D]', u''), (u'[F]', u''), (u'MULTi BluRay x264-PopHD', u''), (u'WwW.Zone-Telechargement.Ws', u''), 
+                   (u"[CR]", u''), (u"[HD]", u''), (u"Uptobox", u''), (u"[]", u''), (u"540p", u''),(u"BluRayx264-LOST", u''),    
+                   (u"[CC]", u''), (u"1080p", u''), (u"720p", u''), (u"h264", u''), (u"AC3-6ch", u''), (u"AC3-6ch", u''), (u"&133", u''),      
+                   (u"[Cc]", u''), (u"[Favorite]", u""), (u".MULTi.TRUEFRENCH.1080p.BluRay.DTS.x264-MeToO-Shanks@Zone-Telechargement", u""),              
                    (u"[DRM]", u""), (u'(cc).', u''),
                    (u'(n)', u''), (u"(SUB)", u''),
                    (u"(DUB)", u''), (u'(repeat)', u''),
                    (u"(English Subtitled)", u""), (u"*", u""),
-                   (u"\n", u""), (u"\r", u""),
+                   (u"\n", u""), (u"\r", u""), (u".", u" "),
                    (u"\t", u""), (u"\ ", u''),
                    (u"/ ", u''), (u"\\", u'/'),
-                   (u"//", u'/'), (u'plugin.video.', u''),(u':', u''),
+                   (u"//", u'/'), (u'plugin.video.', u''), (u'mkv', u''), (u'avi', u''), (u'1080p.', u''), (u':', u''), (u'FRENCH', u''), (u'MULTI', u''),
                    (u'plugin.audio.', u''))
 
     text = utils.multiple_reSub(text, dictresub)
     text = utils.multiple_replace(text, *replacements)
     text = re.sub('[\/:*?<>|!@#$/:]', '', text)
-    text = re.sub('\(.\d*\)',"", text)
+    #text = re.sub('\(.\d*\)',"", text)
     if formater == 'title':
         text = text.title().replace("'S", "'s")
     elif formater == 'upper':
@@ -159,7 +159,7 @@ def replaceStringElem(lst, old='', new=''):
     return ([x.replace(old, new) for x in lst])
 
 def cleanByDictReplacements(string):
-    dictReplacements = {"'\(\\d+\)'" : '', '()' : '', 'Kinofilme' : '', 
+    dictReplacements = {"'\(\\d+\)'" : '', 'Kinofilme' : '', 
                         '  ' : ' ','\(de\)':'','\(en\)':'', 
                         "\(TVshow\)":"",'Movies' : '', 'Filme' : '', 
                         'Movie' : '', "'.'" : ' ', '\(\)' : '',

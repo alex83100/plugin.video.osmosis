@@ -34,7 +34,6 @@ import utils
 import xbmc
 import xbmcplugin, xbmcgui, xbmcaddon, xbmcvfs
 
-
 try:
     import json
 except:
@@ -146,7 +145,7 @@ def getType(url):
     if url.find('plugin.audio') != -1:
         Types = ['YouTube','Audio-Album', 'Audio-Single', 'Other']
     else:
-        Types = ['Movies', 'TV-Shows', 'YouTube','Other']
+        Types = ['Cinema', 'TV-Shows', 'Shows-Collection', 'YouTube',"TVShows sub structures",'Other']
     
     selectType = selectDialog(Types, header ='Select category')
        
@@ -170,21 +169,26 @@ def editDialog(nameToChange):
     select = dialog.input(nameToChange, type=xbmcgui.INPUT_ALPHANUM)
     return select
 #Before executing the code below we need to know the movie original title (string variable originaltitle) and the year (string variable year). They can be obtained from the infolabels of the listitem. The code filters the database for items with the same original title and the same year, year-1 and year+1 to avoid errors identifying the media.
-def markMovie(movID, pos, total, done):
-    if done:
-        #int(100 * float(pos)/ float(total)) >= 95
+def markMovie(sTitle):
+    if xbmc.getCondVisibility('Library.HasContent(Movies)'):
         try:
-            xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.SetMovieDetails", "params": {"movieid" : %s, "playcount" : 1 }, "id": 1 }' % movID)
+            print("Check if movie exists in library when marking as watched")
+            meta = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "filter": {"field": "playcount", "operator": "is", "value": "0"}, "limits": { "start" : 0, "end": 75 }, "properties" : ["art", "rating", "thumbnail", "playcount", "file"], "sort": { "order": "ascending", "method": "label", "ignorearticle": true } }, "id": "libMovies"}')  
+            meta = stringUtils.uni(meta)#(meta, 'utf-8', errors='ignore')
+            meta = json.loads(meta)
+            meta = meta['result']['movies']
+        
+            cleaned_title= re.sub('[^-a-zA-Z0-9_.()\\\/ ]+', '',  sTitle) #originaltitle)
+            try:
+                meta = [i for i in meta if cleaned_title.rstrip() in i['file'].rstrip()][0]
+            except:
+                print("markMovie: Original title not found")
+                pass
+            xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.SetMovieDetails", "params": {"movieid" : %s, "playcount" : 1 }, "id": 1 }' % str(meta['movieid']))
         except:
             print("markMovie: Movie not in DB!?")
-            pass  
-    else:    
-        if xbmc.getCondVisibility('Library.HasContent(Movies)'):
-            try:
-                xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.SetMovieDetails", "params": {"movieid" : %s, "resume" : {"position":%s,"total":%s} }, "id": 1 }' % (movID, pos, total))
-            except:
-                print("markMovie: Movie not in DB!?")
-                pass
+            pass
+               
 
 def markSeries(sShowTitle,sEpisode,sSeason):
     if xbmc.getCondVisibility('Library.HasContent(TVShows)'):
@@ -201,6 +205,12 @@ def markSeries(sShowTitle,sEpisode,sSeason):
                 pass
             if gotIt:               
                 player = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}')
+                
+                #while meta.find("video") == -1:
+                    #time.sleep(2)
+            #resume playing
+            #xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid" : %s, "resume": {"position": 1600, "total": 3600}}, "id": 1 }' % str(gotIt['episodeid']))
+            #set watched
             xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid" : %s, "playcount" : 1 }, "id": 1 }' % str(gotIt['episodeid']))
         except:
             print("markSeries: Show not in DB!?")
@@ -256,9 +266,3 @@ def yesnoDialog(str1, str2='', header=ADDON_NAME, yes='', no=''):
 def browse(type, heading, shares, mask='', useThumbs=False, treatAsFolder=False, path='', enableMultiple=False):
     retval = xbmcgui.Dialog().browse(type, heading, shares, mask, useThumbs, treatAsFolder, path, enableMultiple)
     return retval
-
-def checkGuiA():
-    try:
-        return True
-    except:
-        pass
